@@ -19,8 +19,9 @@ namespace TestEnumSwitch
             if (IsFriendly && player.curLevel >= 1)
             {
                 // 1. Can Talk to merchant
-                Console.WriteLine(Description);
-                Console.ReadKey();
+                GeneralGameFunctionality.DelayTextOutput(Description);
+                Thread.Sleep(1000);
+                Console.WriteLine("\n");
                 // Create Items in Store
                 CreateItems();
                 // 2. Show Items for Player..

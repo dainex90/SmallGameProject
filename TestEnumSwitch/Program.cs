@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Diagnostics.Metrics;
 using System.Reflection.Emit;
 using System.Reflection.PortableExecutable;
 
@@ -25,11 +26,10 @@ namespace TestEnumSwitch
             snowyPeaks
         }
 
+        static Mage newPlayer;
         static bool chooseClass = true;
-        static Character newPlayer;
         static int width = Console.WindowWidth;
         static int height = Console.WindowHeight;
-        static string location = "";
 
         // enums
         public static GameStates currentGameState;
@@ -52,7 +52,7 @@ namespace TestEnumSwitch
                         Console.WriteLine("A HERO'S REQUEST");
                         SetCursorPos(0, 0);
                         Console.WriteLine("Press 'ENTER'");
-                        if (Console.ReadKey().Key == ConsoleKey.Enter)
+                        if (Console.ReadKey(true).Key == ConsoleKey.Enter)
                         {
                             currentGameState = GameStates.charcreation;
                             Console.Clear();
@@ -69,16 +69,16 @@ namespace TestEnumSwitch
                             Console.Clear();
                             Console.WriteLine("Choose a Class to play: \n\n\n\n1.) Mage\n\n2.) Hunter");
                             SetCursorPos();
-                            if (Console.ReadKey().Key == ConsoleKey.D1)
+                            if (Console.ReadKey(true).Key == ConsoleKey.D1)
                             {
-                                newPlayer = new Character("Mage", playerName, 6, 4, 50, 100, "Bent Scepter", "Cloth Armor", "Mana", "Arcane Elixir");
+                                newPlayer = new Mage("Mage", playerName, 7, 3, 50, 100, "Light Armor");
                                 chooseClass = false;
                             }
-                            else if (Console.ReadKey().Key == ConsoleKey.D2)
-                            {
-                                newPlayer = new Character("Ranger", playerName, 10, 8, 50, 100, "Scrap Bow", "Leather Armor", "Energy", "Dexterity Booster");
-                                chooseClass = false;
-                            }
+                            //else if (Console.ReadKey().Key == ConsoleKey.D2)
+                            //{
+                            //    newPlayer = new Character("Ranger", playerName, 10, 8, 50, 100, "Scrap Bow", "Leather Armor", "Energy", "Dexterity Booster");
+                            //    chooseClass = false;
+                           // }
                             else
                             {
                                 Console.WriteLine("\nInvalid Key, choose a Class");
@@ -90,18 +90,20 @@ namespace TestEnumSwitch
 
                     case GameStates.prologue:
                         Console.Clear();
-                        Console.WriteLine("\nYou wake up on a beach robbed of all your money and after some time you\n" +
+                        GeneralGameFunctionality.DelayTextOutput("You wake up on a beach robbed of all your money and after some time you\n" +
                             "realise your squire is also gone! After some time sunken in you see a path leading into a rainy forest" +
                             "and decides to move further..");
                         SetCursorPos();
                         Console.WriteLine("Press 'ENTER' to Continue.");
 
-                        if (Console.ReadKey().Key == ConsoleKey.Enter)
+                        if (Console.ReadKey(true).Key == ConsoleKey.Enter)
                         {
                             currentGameState = GameStates.ingame;
                             Console.Clear();
                         }
                         break;
+
+                        // INGAME
                     case GameStates.ingame:
                         switch (currentLevelState)
                         {   
@@ -132,7 +134,6 @@ namespace TestEnumSwitch
 
                     case GameStates.inventory:
                         SetCursorPos(width / 2, height / 2);
-                        Console.WriteLine($"INVENTORY\n\n\n");
                         newPlayer.ShowInventory();
                         // resetting cursor pos ..
                         SetCursorPos();
@@ -162,12 +163,20 @@ namespace TestEnumSwitch
             width = 0;
             height = 5;
             SetCursorPos(width, height);
-            Console.WriteLine($"Name: {newPlayer.name.ToUpper()} \nLEVEL: {newPlayer.curLevel}\nClass: {newPlayer._class.ToUpper()}" +
-                $"\nHealth: {newPlayer.curHealth}/{newPlayer.maxHealth} \n{newPlayer.specialResource}: {newPlayer.curSpecialResource}/" +
-                $"{newPlayer.maxSpecialResource} \nWeapon: {newPlayer.curWeapon}" +
-                $"\nArmor: {newPlayer.armor} \nGold: {newPlayer.gold}");
-            newPlayer.GetPowerPairs();
+            Console.WriteLine($"Name: {newPlayer.Name.ToUpper()} \nLEVEL: {newPlayer.curLevel}\nClass: {newPlayer.Class.ToUpper()}" +
+                $"\nHealth: {newPlayer.CurHealth}/{newPlayer.MaxHealth} \n{newPlayer.SpecialResource}: {newPlayer.CurSpecialResource}/" +
+                $"{newPlayer.MaxSpecialResource}\nArmor: {newPlayer.Armor} \n{newPlayer.AttackType}: {newPlayer.Power}\nGold: {newPlayer.Gold}");
 
+            if (newPlayer.CurWeapon != null)
+            {
+                Console.WriteLine($"Weapon: {newPlayer.CurWeapon.Name}");
+            }
+            else
+            {
+                Console.WriteLine("NO WEAPON EQUIPPED!");
+            }
+            
+            // Checking where the player are at the moment..
             if (currentLevelState == LevelStates.city)
             {
                 // you can visit the Tavern ..
@@ -188,7 +197,7 @@ namespace TestEnumSwitch
     static void PlayerInput(LevelStates prevLocation)
     {
             // CODE HERE -->
-        switch (Console.ReadKey().Key)
+        switch (Console.ReadKey(true).Key)
         {
             case ConsoleKey.I:
                 currentGameState = GameStates.inventory;
@@ -197,7 +206,7 @@ namespace TestEnumSwitch
                 currentLevelState = LevelStates.tavern;    
                 break;
             case ConsoleKey.N:
-                Merchant merchant = new Merchant("Trader", true, $"Hello, i probably have what you need {newPlayer.name}!");
+                Merchant merchant = new Merchant("Trader", true, $"Hello, i probably have what you need {newPlayer.Name}!");
                 merchant.Interact(newPlayer);
                 break;
             case ConsoleKey.D1:
