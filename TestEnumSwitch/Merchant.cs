@@ -125,7 +125,7 @@ namespace TestEnumSwitch
             {
                 case ConsoleKey.D1:
                     // Get the item indexed at [0] if you can afford it!
-                    if (CanAffordWeapon(player, 0))
+                    if (CanAffordWeapon(player, 0) && HasInventorySpace())
                     {
                         player.AllWeapons.Add(MagicWeaponsStore[0]);
                         player.Gold -= MagicWeaponsStore[0].Value;
@@ -134,12 +134,12 @@ namespace TestEnumSwitch
                     }
                     else
                     {
-                        Console.WriteLine("CAN'T AFFORD!");
+                        Console.WriteLine("CAN'T BUY!");
                     }
                     break;
                 case ConsoleKey.D2:
                     // get item Indexed at [1] and so forth..
-                    if (CanAffordWeapon(player, 1))
+                    if (CanAffordWeapon(player, 1) && HasInventorySpace())
                     {
                         player.AllWeapons.Add(MagicWeaponsStore[1]);
                         player.Gold -= MagicWeaponsStore[1].Value;
@@ -148,11 +148,11 @@ namespace TestEnumSwitch
                     }
                     else
                     {
-                        Console.WriteLine("CAN'T AFFORD");
+                        Console.WriteLine("CAN'T BUY");
                     }
                     break;
                 case ConsoleKey.D3:
-                    if (CanAffordWeapon(player, 2))
+                    if (CanAffordWeapon(player, 2) && HasInventorySpace())
                     {
                         player.AllWeapons.Add(MagicWeaponsStore[2]);
                         player.Gold -= MagicWeaponsStore[2].Value;
@@ -161,11 +161,11 @@ namespace TestEnumSwitch
                     }
                     else
                     {
-                        Console.WriteLine("CAN'T AFFORD");
+                        Console.WriteLine("CAN'T BUY");
                     }
                     break;
                 case ConsoleKey.D4:
-                    if (CanAffordWeapon(player, 3))
+                    if (CanAffordWeapon(player, 3) && HasInventorySpace())
                     {
                         player.AllWeapons.Add(MagicWeaponsStore[3]);
                         player.Gold -= MagicWeaponsStore[3].Value;
@@ -174,7 +174,7 @@ namespace TestEnumSwitch
                     }
                     else
                     {
-                        Console.WriteLine("CAN'T AFFORD");
+                        Console.WriteLine("CAN'T BUY");
                     }
                     break;
                 case ConsoleKey.B:
@@ -189,13 +189,38 @@ namespace TestEnumSwitch
 
         private bool CanAffordWeapon(Mage player, int index)
         {
-            if (MagicWeaponsStore[index].Value <= player.Gold)
+            try
             {
-                return true;
+                if (MagicWeaponsStore[index].Value <= player.Gold)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+            return false;
+            
+        }
+
+        private bool HasInventorySpace()
+        {
+            if (Program.newPlayer.AllWeapons.Count >= (int)Program.newPlayer.InventorySize)
+            {
+                // Can't buy any more items from Store!
+                return false;
+            }
+
             else
             {
-                return false; 
+                // Can buy stuff..
+                return true;
             }
         }
     }

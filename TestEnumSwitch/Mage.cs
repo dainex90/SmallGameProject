@@ -22,8 +22,8 @@ namespace TestEnumSwitch
         public Mage() : base()
         {
         }
-        public Mage(string _class, string name, double power, int armor, int gold, int maxHealth,
-            string armorType) : base(_class, name, power, armor, gold, maxHealth, armorType)
+        public Mage(string _class, string name, double powerBase, int armor, int gold, int maxHealth,
+            string armorType) : base(_class, name, powerBase, armor, gold, maxHealth, armorType)
         {
             SpecialPotions = new List<string>();
             AllWeapons = new List<MagicWeapon>();
@@ -60,43 +60,48 @@ namespace TestEnumSwitch
             else
             {
                 Console.WriteLine("EMPTY!");
+                Console.Beep();
             }   
             
             Console.WriteLine("\n\n\n Press 'B' <--");
             base.ShowInventory();
         }
 
-        public override void EquipItem()
+        public override void SelectingWeapon()
         {
             switch (Console.ReadKey(true).Key)
             {
                 case ConsoleKey.D1:
-                    try
-                    {
-                        CurWeapon = AllWeapons[0];
-                        AllWeapons.RemoveAt(0);
-                        Console.WriteLine($"You Equipped {CurWeapon.Name}!");
-                        
-                        this.Power += CurWeapon.AttackPower;
-                        Console.ReadKey(true);
-                    }
-                    catch (Exception ex)
-                    {
-
-                        Console.WriteLine("Can't Equip!");
-                    
-                    }
-                    Console.Beep();
+                    EquipWeaponFromInventory(index:0);
                     break;
-
+                case ConsoleKey.D2:
+                    EquipWeaponFromInventory(index: 1);
+                    break;
+                case ConsoleKey.D3:
+                    EquipWeaponFromInventory(index: 2);
+                    break;
                 case ConsoleKey.B:
                     Program.currentGameState = Program.GameStates.ingame;
                     break;
-
                 default:
                     break;
             }
-            base.EquipItem();
+            base.SelectingWeapon();
+        }
+
+        public void EquipWeaponFromInventory(int index)
+        {
+            try
+            {
+                CurWeapon = AllWeapons[index];
+                AllWeapons.RemoveAt(index);
+                Console.WriteLine($"You Equipped {CurWeapon.Name}!");
+                this.PowerMax = this.PowerBase + CurWeapon.AttackPower;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
 

@@ -78,9 +78,9 @@ namespace TestEnumSwitch
                             newPlayer = new Mage(
                                         _class:"Mage",
                                         name:playerName,
-                                        power:7,
+                                        powerBase:7,
                                         armor:3,
-                                        gold:250,
+                                        gold:20000,
                                         maxHealth:100,
                                         armorType:"Light Armor");
                             
@@ -156,7 +156,7 @@ namespace TestEnumSwitch
                     SetCursorPos(width / 2, height / 2);
                     newPlayer.ShowInventory();
                     SetCursorPos();
-                    newPlayer.EquipItem();
+                    newPlayer.SelectingWeapon();
                     break;
 
                 case GameStates.interact:
@@ -180,14 +180,15 @@ namespace TestEnumSwitch
     static void DisplayHUD(string curLocation, string prevLocation)
     {
             SetCursorPos(width / 2, height);
-            width = 5;
             Console.WriteLine(curLocation);
+            width = 5;
+            height = 5;
             SetCursorPos(width, height);
             
             // Character Information displayed on-screen
             Console.WriteLine($"Name: {newPlayer.Name.ToUpper()} \nLEVEL: {newPlayer.curLevel}\nClass: {newPlayer.Class.ToUpper()}" +
                 $"\nHealth: {newPlayer.CurHealth}/{newPlayer.MaxHealth} \n{newPlayer.SpecialResource}: {newPlayer.CurSpecialResource}/" +
-                $"{newPlayer.MaxSpecialResource}\nArmor: {newPlayer.Armor} \n{newPlayer.AttackType}: {newPlayer.Power}\nGold: {newPlayer.Gold}");
+                $"{newPlayer.MaxSpecialResource}\nArmor: {newPlayer.Armor} \n{newPlayer.AttackType}: {newPlayer.PowerMax}\nGold: {newPlayer.Gold}");
 
             if (newPlayer.CurWeapon != null)
             {
@@ -237,7 +238,7 @@ namespace TestEnumSwitch
             case ConsoleKey.D2:
                 Console.Clear();
                 SetCursorPos(width / 2, height / 2);
-                Console.WriteLine("It's too dangerous going this path right now..");
+                GeneralGameFunctionality.DelayTextOutput("It's too dangerous going this path right now!");
                 Console.ReadLine();
                 break;
             default:
