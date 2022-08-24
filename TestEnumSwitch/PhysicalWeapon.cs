@@ -10,7 +10,7 @@ namespace TestEnumSwitch
     {
         public double StaminaCost { get; set; }
 
-        public PhysicalWeapon(string name, string description, double attackPower, double attackSpeed, double cost, bool isRanged, double staminaCost) : base(name, description, attackPower, attackSpeed, cost, isRanged)
+        public PhysicalWeapon(string name, string description, double attackPower, double attackSpeed, double cost, bool isRanged, double staminaCost) : base()
         {
             StaminaCost = staminaCost;
         }

@@ -19,7 +19,7 @@ namespace TestEnumSwitch
             this.Description = description;
         }
 
-        public virtual void Interact(Character player)
+        public virtual void Interact(Mage player)
         {
             // Talk to strangers
             

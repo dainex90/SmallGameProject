@@ -10,9 +10,8 @@ namespace TestEnumSwitch
     {
         public double ManaCost { get; set; }
 
-        public MagicWeapon(string name, string description, double attackPower, double attackSpeed, double value, bool isRanged, double manaCost) : base(name, description, attackPower, attackSpeed, value, isRanged)
+        public MagicWeapon() : base()
         {
-            ManaCost = manaCost;
         }
     }
 }

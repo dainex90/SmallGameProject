@@ -16,14 +16,8 @@ namespace TestEnumSwitch
         public double Value { get; set; }
         public bool IsRanged { get; set; }
 
-        public Weapon(string name, string description, double attackPower, double attackSpeed, double value, bool isRanged)
+        public Weapon()
         {
-            Name = name;
-            Description = description;
-            AttackPower = attackPower;
-            AttackSpeed = attackSpeed;
-            Value = value;
-            IsRanged = isRanged;
         }
     }
 }

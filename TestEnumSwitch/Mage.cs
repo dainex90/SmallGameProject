@@ -8,7 +8,8 @@ namespace TestEnumSwitch
 {
 
     public class Mage : Character
-    {
+    {   
+        public MagicWeapon? PreviousWeapon { get; set; }
         public MagicWeapon? CurWeapon { get; set; }
         public List<string> SpecialPotions { get; set; }
         public List<MagicWeapon> AllWeapons { get; set; }
@@ -18,12 +19,24 @@ namespace TestEnumSwitch
         public int MaxSpecialResource { get; set; }
         public int CurSpecialResource { get; set; }
 
+        public Mage() : base()
+        {
+        }
         public Mage(string _class, string name, double power, int armor, int gold, int maxHealth,
             string armorType) : base(_class, name, power, armor, gold, maxHealth, armorType)
         {
             SpecialPotions = new List<string>();
             AllWeapons = new List<MagicWeapon>();
-            MagicWeapon starterWeapon = new MagicWeapon("Bent Scepter", "A useless starter weapon", 7, 3, 10, true, 12);
+            MagicWeapon starterWeapon = new MagicWeapon()
+            {
+                Name = "Bent Scepter",
+                Description = "Useless for combat",
+                AttackPower = 6,
+                AttackSpeed = 3,
+                Value = 20,
+                IsRanged = true,
+                ManaCost = 15
+            };
 
             AllWeapons.Add(starterWeapon);
             SpecialResource = "Mana";
@@ -63,6 +76,7 @@ namespace TestEnumSwitch
                         CurWeapon = AllWeapons[0];
                         AllWeapons.RemoveAt(0);
                         Console.WriteLine($"You Equipped {CurWeapon.Name}!");
+                        
                         this.Power += CurWeapon.AttackPower;
                         Console.ReadKey(true);
                     }

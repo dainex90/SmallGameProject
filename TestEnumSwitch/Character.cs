@@ -13,13 +13,17 @@ namespace TestEnumSwitch
         public string Name {get;set;}
         public double Power {get;set;} 
         public int Armor {get;set;}
-        public int Gold {get;set;}
+        public double Gold {get;set;}
         public int MaxHealth {get;set;}
         public int CurHealth {get;set;}
         public string ArmorType { get; set; }
+        
+        public Character()
+        {
 
+        }
         // Constructor
-        public Character(string _class, string name, double power, int armor, int gold, int maxHealth, 
+        public Character(string _class, string name, double power, int armor, double gold, int maxHealth, 
             string armorType)
         {
             this.Class = _class;
