@@ -9,15 +9,14 @@ namespace TestEnumSwitch
     public class Character : CharacterBase
    {
         // Fields and propertys
-        public double InventorySize { get; set; } = 3;
         public string Class { get; set; }
         public string Name {get;set;}
         public double PowerBase {get;set;}
         public double PowerMax { get; set;}
         public int Armor {get;set;}
         public double Gold {get;set;}
-        public int MaxHealth {get;set;}
-        public int CurHealth {get;set;}
+        public double MaxHealth {get;set;}
+        public double CurHealth {get;set;}
         public string ArmorType { get; set; }
         
         public Character()
@@ -25,7 +24,7 @@ namespace TestEnumSwitch
 
         }
         // Constructor
-        public Character(string _class, string name, double powerBase, int armor, double gold, int maxHealth, 
+        public Character(string _class, string name, double powerBase, int armor, double gold, double maxHealth, 
             string armorType)
         {
             this.Class = _class;

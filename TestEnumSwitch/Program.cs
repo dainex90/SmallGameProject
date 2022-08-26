@@ -5,6 +5,7 @@ using System.Reflection.Emit;
 using System.Reflection.PortableExecutable;
 
 using System.Media;
+using System.Runtime.CompilerServices;
 
 namespace TestEnumSwitch
 {
@@ -15,9 +16,10 @@ namespace TestEnumSwitch
             start,
             charcreation,
             prologue,
-            ingame,
+            main,
             inventory,
             interact,
+            incombat,
             exit
         }
 
@@ -26,11 +28,13 @@ namespace TestEnumSwitch
             forest,
             city,
             tavern,
+            mountainpass,
             snowyPeaks
         }
-
-        public static Merchant newMerchant;
-        public static Mage newPlayer;
+        private static ConsoleColor standardForegroundColor = ConsoleColor.Cyan;
+        private static ConsoleColor standardBackgroundColor = ConsoleColor.DarkGray;
+        public static Merchant<MagicWeapon> newMerchant;
+        public static Mage player;
         static bool chooseClass = true;
         static int width = Console.WindowWidth;
         static int height = Console.WindowHeight;
@@ -43,8 +47,8 @@ namespace TestEnumSwitch
     {
         currentGameState = GameStates.start;
         currentLevelState = LevelStates.forest;
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.BackgroundColor = ConsoleColor.DarkGray;
+        Console.ForegroundColor = standardForegroundColor;
+        Console.BackgroundColor = standardBackgroundColor;
 
             // MAIN GAME-LOOP!!
          while (currentGameState != GameStates.exit)
@@ -75,9 +79,9 @@ namespace TestEnumSwitch
                         SetCursorPos();
                         if (Console.ReadKey(true).Key == ConsoleKey.D1)
                         {
-                            newPlayer = new Mage(
+                            player = new Mage(
                                         _class:"Mage",
-                                        name:playerName,
+                                        name: playerName,
                                         powerBase:7,
                                         armor:3,
                                         gold:20000,
@@ -99,10 +103,10 @@ namespace TestEnumSwitch
                         }
                             
                     }
-                    newMerchant = new Merchant(
+                    newMerchant = new Merchant<MagicWeapon>(
                                     name: "Trader",
                                     isFriendly: true,
-                                    description: $"Hello, i probably have what you need {newPlayer.Name}!"
+                                    description: $"Hello, i probably have what you need {player.Name}!"
                                     );
                     currentGameState = GameStates.prologue;
                     break;
@@ -117,31 +121,35 @@ namespace TestEnumSwitch
 
                     if (Console.ReadKey(true).Key == ConsoleKey.Enter)
                     {
-                        currentGameState = GameStates.ingame;
+                        currentGameState = GameStates.main;
                         Console.Clear();
                     }
                     break;
 
-                    // INGAME
-                case GameStates.ingame:
+                    // MAIN INGAME STATE
+                case GameStates.main:
                     switch (currentLevelState)
                     {   
+                        // Starting Level atm..
                         case LevelStates.forest:
-                            Console.Clear();
-                            DisplayHUD("THE FOREST", "City");
+                            DisplayHUD(currentLevelState, "City");
                             PlayerInput(LevelStates.city);
                             break;
                         case LevelStates.city:
                             // In the City
-                            Console.Clear();
-                            DisplayHUD("CITY", "The Forest");
+                            DisplayHUD(currentLevelState, "The Forest");
                             PlayerInput(LevelStates.forest);
                             break;
                         case LevelStates.tavern:
-                            Console.Clear();
                             // IN THE TAVERN, CAN MEET NPC's
-                            DisplayHUD("THE TAVERN", "City");
+                            DisplayHUD(currentLevelState, "City");
                             PlayerInput(LevelStates.city);
+                            break;
+                        case LevelStates.mountainpass:
+                                // In the mountains, watch out for Enemies here ..
+                            DisplayHUD(currentLevelState, "City");
+                            PlayerInput(LevelStates.city);
+                            
                             break;
                         case LevelStates.snowyPeaks:
                             // UNDER DEVELOPMENT, LATER GAME CONTENT
@@ -154,13 +162,25 @@ namespace TestEnumSwitch
 
                 case GameStates.inventory:
                     SetCursorPos(width / 2, height / 2);
-                    newPlayer.ShowInventory();
+                    player.ShowInventory();
                     SetCursorPos();
-                    newPlayer.SelectingWeapon();
+                    player.SelectingWeapon();
                     break;
 
                 case GameStates.interact:
-                    newMerchant.Interact(newPlayer);
+                    newMerchant.Interact(player);
+                    break;
+                case GameStates.incombat:
+                    Imp enemy = new Imp()
+                    {
+                        Name = "Fiery Imp",
+                        Description = "A basic imp walking the border area around the pass",
+                        Level = 2,
+                        Power = 3,
+                        MaxHealth = 75,
+                        CurHealth = 75
+                    };
+                    player.Interaction(enemy);
                     break;
                 case GameStates.exit:
                     Console.Beep();
@@ -177,22 +197,31 @@ namespace TestEnumSwitch
         // sets Cursor Position on screen..
         Console.SetCursorPosition(x, y);
     }
-    static void DisplayHUD(string curLocation, string prevLocation)
+        // Main Screen HUD
+    static void DisplayHUD(LevelStates curLocation, string prevLocation)
     {
-            SetCursorPos(width / 2, height);
-            Console.WriteLine(curLocation);
+            Console.Clear();
+            SetCursorPos(Console.WindowWidth/2, Console.WindowHeight/ 4);
+            // Where player are at the moment
+            GeneralGameFunctionality.ChangeForegroundFontColor(ConsoleColor.Green);
+            Console.WriteLine(curLocation.ToString().ToUpper());
+            GeneralGameFunctionality.ChangeForegroundFontColor(standardForegroundColor);
             width = 5;
             height = 5;
             SetCursorPos(width, height);
-            
             // Character Information displayed on-screen
-            Console.WriteLine($"Name: {newPlayer.Name.ToUpper()} \nLEVEL: {newPlayer.curLevel}\nClass: {newPlayer.Class.ToUpper()}" +
-                $"\nHealth: {newPlayer.CurHealth}/{newPlayer.MaxHealth} \n{newPlayer.SpecialResource}: {newPlayer.CurSpecialResource}/" +
-                $"{newPlayer.MaxSpecialResource}\nArmor: {newPlayer.Armor} \n{newPlayer.AttackType}: {newPlayer.PowerMax}\nGold: {newPlayer.Gold}");
+            Console.WriteLine($"\n\n\nName: {player.Name.ToUpper()} \nLEVEL: {player.curLevel}\nClass: {player.Class.ToUpper()}" +
+                $"\nHealth: {player.CurHealth}/{player.MaxHealth} \n{player.SpecialResource}: {player.CurSpecialResource}/" +
+                $"{player.MaxSpecialResource}\nArmor: {player.Armor} \nGold: {player.Gold}\n{player.AttackType}: {player.PowerMax}");
 
-            if (newPlayer.CurWeapon != null)
+            if (player.CurWeapon != null)
             {
-                Console.WriteLine($"Weapon: {newPlayer.CurWeapon.Name}");
+                if (player.CurWeapon.FireDamage > 0)
+                {
+                    Console.WriteLine($" + (Fire): {player.CurWeapon.FireDamage}");
+                }
+
+                Console.WriteLine($"\nWeapon: {player.CurWeapon.Name}");
             }
             else
             {
@@ -204,18 +233,31 @@ namespace TestEnumSwitch
             if (currentLevelState == LevelStates.city)
             {
                 // you can visit the Tavern ..
-                Console.WriteLine("\n'T'.) Visit Tavern!");
+                Console.WriteLine("\n'T'.) Visit 'Tavern'!");
+
+                // You can go to the MOUNTAIN-PASS
+                Console.WriteLine("\n'M'.) Head To 'Mountain Pass'");
             }
 
+            if (currentLevelState == LevelStates.mountainpass && currentGameState != GameStates.incombat)
+            {
+                GeneralGameFunctionality.DelayTextOutput("A Travelling knight is walking by, maybe you can ask him for some help concerning your injuries..");
+                Thread.Sleep(4000);
+            }
             if (currentLevelState == LevelStates.tavern)
             {
                 // You can talk to merchants and npc's
-                Console.WriteLine("\'N'.) Talk to Merchant");
+                Console.WriteLine("\n'N'.) Talk to 'Merchant'");
+
+                Console.WriteLine("\n'S' .) Talk to 'Silent Beggar'");
             }
+
+            GeneralGameFunctionality.ChangeForegroundFontColor(ConsoleColor.DarkCyan);
             Console.WriteLine("\n\n");
             Console.WriteLine($"'I'.) INVENTORY");
             Console.WriteLine($"1.) Travel to {prevLocation}");   
             Console.WriteLine($"2.) Travel to Snowy Peaks");
+            GeneralGameFunctionality.ChangeForegroundFontColor(standardForegroundColor);
     }
     
     static void PlayerInput(LevelStates prevLocation)
@@ -231,6 +273,15 @@ namespace TestEnumSwitch
                 break;
             case ConsoleKey.N:
                 currentGameState = GameStates.interact;
+                break;
+            case ConsoleKey.S:
+                Merchant<MagicWeapon> spellVendor = new Merchant<MagicWeapon>("Silent Beggar", true, "We have some spells");
+                    spellVendor.CreateItems(count: 10);
+                    spellVendor.ListItems();
+                break;
+            case ConsoleKey.M:
+                currentLevelState = LevelStates.mountainpass;
+                currentGameState = GameStates.incombat;
                 break;
             case ConsoleKey.D1:
                 currentLevelState = prevLocation;

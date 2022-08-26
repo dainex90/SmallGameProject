@@ -8,6 +8,8 @@ namespace TestEnumSwitch
 {
     public class MagicWeapon : Weapon
     {
+        public double FireDamage { get; set; }
+        public double MagicDamage { get; set; }
         public double ManaCost { get; set; }
 
         public MagicWeapon() : base()

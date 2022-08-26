@@ -11,7 +11,7 @@ namespace TestEnumSwitch
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public double AttackPower { get; set; }
+        public double Damage { get; set; }
         public double AttackSpeed { get; set; }
         public double Value { get; set; }
         public bool IsRanged { get; set; }

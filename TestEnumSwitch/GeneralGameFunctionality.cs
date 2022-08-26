@@ -21,5 +21,10 @@ namespace TestEnumSwitch
                 Console.Write(character);
             }
         }
+
+        public static void ChangeForegroundFontColor(ConsoleColor color)
+        {
+            Console.ForegroundColor = color;
+        }
     }
 }

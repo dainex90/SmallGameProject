@@ -9,10 +9,10 @@ namespace TestEnumSwitch
     public class PhysicalWeapon : Weapon
     {
         public double StaminaCost { get; set; }
+        public double PhysicalDamage { get; set; }
 
-        public PhysicalWeapon(string name, string description, double attackPower, double attackSpeed, double cost, bool isRanged, double staminaCost) : base()
+        public PhysicalWeapon() : base()
         {
-            StaminaCost = staminaCost;
         }
     }
 }

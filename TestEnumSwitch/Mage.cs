@@ -8,7 +8,11 @@ namespace TestEnumSwitch
 {
 
     public class Mage : Character
-    {   
+    {
+        public double MaxAbilityCount { get; set; } = 3;
+        public double CurAbilityCount { get; set; }
+        public List<Ability> AvailableAbilities { get; set; }
+        public MagicWeapon? WeaponSwitching { get; set; }
         public MagicWeapon? PreviousWeapon { get; set; }
         public MagicWeapon? CurWeapon { get; set; }
         public List<string> SpecialPotions { get; set; }
@@ -27,11 +31,12 @@ namespace TestEnumSwitch
         {
             SpecialPotions = new List<string>();
             AllWeapons = new List<MagicWeapon>();
+            AvailableAbilities = new List<Ability>();
             MagicWeapon starterWeapon = new MagicWeapon()
             {
                 Name = "Bent Scepter",
                 Description = "Useless for combat",
-                AttackPower = 6,
+                Damage = 6,
                 AttackSpeed = 3,
                 Value = 20,
                 IsRanged = true,
@@ -47,7 +52,8 @@ namespace TestEnumSwitch
         public override void ShowInventory()
         {
             Console.Clear();
-            Console.WriteLine($"INVENTORY\n\n\n");
+            
+            Console.WriteLine($"INVENTORY              {this.InventorySizeCurrent}/{this.InventorySizeMax}\n");
             int temp = 0;
             if (AllWeapons.Count > 0)
             {
@@ -55,6 +61,16 @@ namespace TestEnumSwitch
                 {
                     temp++;
                     Console.WriteLine($"{temp}. {weapon.Name}");
+                }
+            }
+            temp = 0;
+            if (AvailableAbilities.Count > 0)
+            {
+                Console.WriteLine("'Abilities:'");
+                foreach (var item in AvailableAbilities)
+                {
+                    temp++;
+                    Console.WriteLine($"\n\n{temp}. {item.Name} - {AttackType}({item.Damage}  Level({item.Level})");
                 }
             }
             else
@@ -72,16 +88,16 @@ namespace TestEnumSwitch
             switch (Console.ReadKey(true).Key)
             {
                 case ConsoleKey.D1:
-                    EquipWeaponFromInventory(index:0);
+                    EquipWeaponFromIndex(index:0);
                     break;
                 case ConsoleKey.D2:
-                    EquipWeaponFromInventory(index: 1);
+                    EquipWeaponFromIndex(index: 1);
                     break;
                 case ConsoleKey.D3:
-                    EquipWeaponFromInventory(index: 2);
+                    EquipWeaponFromIndex(index: 2);
                     break;
                 case ConsoleKey.B:
-                    Program.currentGameState = Program.GameStates.ingame;
+                    Program.currentGameState = Program.GameStates.main;
                     break;
                 default:
                     break;
@@ -89,22 +105,24 @@ namespace TestEnumSwitch
             base.SelectingWeapon();
         }
 
-        public void EquipWeaponFromInventory(int index)
+        public void EquipWeaponFromIndex(int index)
         {
             try
             {
+                WeaponSwitching = CurWeapon;
                 CurWeapon = AllWeapons[index];
                 AllWeapons.RemoveAt(index);
+                AllWeapons.Insert(index, CurWeapon);
                 Console.WriteLine($"You Equipped {CurWeapon.Name}!");
-                this.PowerMax = this.PowerBase + CurWeapon.AttackPower;
+                this.PowerMax = this.PowerBase + CurWeapon.Damage;
+                Console.ReadKey(true);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                Console.ReadKey();
             }
         }
-
-
 
     }
 }
